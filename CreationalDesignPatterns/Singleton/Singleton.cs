@@ -5,7 +5,7 @@ namespace Singleton
     public class Singleton
     {
         public static Singleton instance;
-        public readonly string field = "fieldOfSingletonClass";
+        public readonly static object field = new Object();
         private Singleton()
         {
 
@@ -13,8 +13,11 @@ namespace Singleton
 
         public static Singleton GetInstance()
         {
-            if (instance == null)
-                instance = new Singleton();
+            lock(field)
+            {
+                if (instance is null)
+                    instance = new Singleton();
+            }
             return instance;
         }
     }
@@ -25,8 +28,13 @@ namespace Singleton
         {
             public void ClientCode()
             {
-                var instance = Singleton.GetInstance();
-                Console.WriteLine(instance.field);
+                var singleton1 = Singleton.GetInstance();
+                var singleton2 = Singleton.GetInstance();
+
+                if (singleton1.Equals(singleton2))
+                    Console.WriteLine("Singleton works. Two instances are the same.");
+                else
+                    Console.WriteLine("Singleton does not work. Two instances are different.");
             }
         }
         static void Main()
